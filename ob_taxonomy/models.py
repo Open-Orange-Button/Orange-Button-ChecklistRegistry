@@ -82,7 +82,7 @@ class OBObject(models.Model):
     description = models.CharField(max_length=len('A product code is a standardized, unique human-readable identifier that is compact, and can be easily parsed. It consists of an entity code concatenated to a product specific identification string, separated by a hyphen. The format of a product code is: [EntityCode]-[ProductString], e.g., “HANWH-Q_PEAK_DUO_BLK_G10__AC_365”. A product string is comprised of upper-case letters, numbers, and underscores. Any character that is not a letter or number is a special character and will be replaced by an underscore. All letter characters will be upper case. To avoid clashes between identical product codes, an additional hyphen and an integer 1, 2, 3, ..., is appended, e.g. {ProdCode}-{incremental number}'))
     properties = models.ManyToManyField(OBElement)
     comprises = models.ManyToManyField('self', through='OBObjectComprisal')
-    nested_objects = models.ManyToManyField('self')
+    nested_objects = models.ManyToManyField('self', symmetrical=False)
     element_arrays = models.ManyToManyField('OBArrayOfElement')
     object_arrays = models.ManyToManyField('OBArrayOfObject')
 
