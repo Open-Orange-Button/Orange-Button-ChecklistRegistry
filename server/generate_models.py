@@ -88,6 +88,8 @@ def item_type_to_django_field(ob_item_type: ob_models.OBItemType, context):
                 keywords=[
                     ast.keyword(arg='max_digits', value=ast.Constant(value=3)),
                     ast.keyword(arg='decimal_places', value=ast.Constant(value=3)),
+                    ast.keyword(arg='blank', value=ast.Constant(value=True)),
+                    ast.keyword(arg='null', value=ast.Constant(value=True)),
                 ],
             )
         case 'IntegerItemType':
@@ -95,6 +97,8 @@ def item_type_to_django_field(ob_item_type: ob_models.OBItemType, context):
                 func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='IntegerField', ctx=ast.Load()),
                 args=[],
                 keywords=[
+                    ast.keyword(arg='blank', value=ast.Constant(value=True)),
+                    ast.keyword(arg='null', value=ast.Constant(value=True)),
                 ],
             )
         case 'StringItemType':
@@ -103,6 +107,7 @@ def item_type_to_django_field(ob_item_type: ob_models.OBItemType, context):
                 args=[],
                 keywords=[
                     ast.keyword(arg='max_length', value=ast.Constant(value=500)),
+                    ast.keyword(arg='blank', value=ast.Constant(value=True)),
                 ],
             )
         case 'LegalEntityIdentifierItemType':
@@ -111,6 +116,7 @@ def item_type_to_django_field(ob_item_type: ob_models.OBItemType, context):
                 args=[],
                 keywords=[
                     ast.keyword(arg='max_length', value=ast.Constant(value=20)),
+                    ast.keyword(arg='blank', value=ast.Constant(value=True)),
                 ],
             )
         case 'UUIDItemType':
@@ -129,6 +135,7 @@ def item_type_to_django_field(ob_item_type: ob_models.OBItemType, context):
                 args=[],
                 keywords=[
                     ast.keyword(arg='max_length', value=ast.Constant(value=500)),
+                    ast.keyword(arg='blank', value=ast.Constant(value=True)),
                 ],
             )
             raise ValueError(f'Django field for item type {ob_item_type!r} is unknown.')
@@ -201,12 +208,9 @@ def generate_ob_object(ob_object: ob_models.OBObject, context, is_super_ob_objec
         field = ast.Assign(
             targets=[ast.Name(id=element_array.name, ctx=ast.Store())],
             value=ast.Call(
-                func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='ForeignKey', ctx=ast.Load()),
+                func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='ManyToManyField', ctx=ast.Load()),
                 args=[ast.Constant(value=element_array.items.name)],
-                keywords=[
-                    ast.keyword(arg='on_delete',
-                                value=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='CASCADE', ctx=ast.Load())),
-                ]
+                keywords=[]
             )
         )
         klass.body.append(field)
@@ -215,14 +219,12 @@ def generate_ob_object(ob_object: ob_models.OBObject, context, is_super_ob_objec
         field = ast.Assign(
             targets=[ast.Name(id=object_array.name, ctx=ast.Store())],
             value=ast.Call(
-                func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='ForeignKey', ctx=ast.Load()),
+                func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='ManyToManyField', ctx=ast.Load()),
                 args=[ast.Constant(value=object_array.items.name)],
-                keywords=[
-                    ast.keyword(arg='on_delete',
-                                value=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='CASCADE', ctx=ast.Load())),
-                ]
+                keywords=[]
             )
         )
+        klass.body.append(field)
     if is_super_ob_object:
         context['super_ob_objects'][ob_object.name] = klass
     else:
