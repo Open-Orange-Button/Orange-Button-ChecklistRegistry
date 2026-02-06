@@ -156,8 +156,8 @@ def generate_ob_array_of_element(element_array: ob_models.OBArrayOfElement, cont
     context['ob_arrays_of_element'][element_array.name] = klass
 
 
-def generate_ob_object(ob_object: ob_models.OBObject, context):
-    if ob_object.name in context['ob_objects']:
+def generate_ob_object(ob_object: ob_models.OBObject, context, is_super_ob_object=False):
+    if ob_object.name in context['ob_objects'] or ob_object.name in context['super_ob_objects']:
         return
     if ob_object.comprises.exists():
         if ob_object.comprises.through.objects.exclude(method='allOf').exists():
@@ -165,7 +165,7 @@ def generate_ob_object(ob_object: ob_models.OBObject, context):
         if ob_object.comprises.count() > 1:
             raise ValueError(f'Cannot generate Django model for {ob_object!r} because the comprisal of multiple OBObjects is not currently supported.')
         super_ob_object = ob_object.comprises.first()
-        generate_ob_object(super_ob_object, context)
+        generate_ob_object(super_ob_object, context, is_super_ob_object=True)
         bases = [ast.Name(id=super_ob_object.name)]
     else:
         bases = [ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='Model', ctx=ast.Load())]
@@ -223,7 +223,10 @@ def generate_ob_object(ob_object: ob_models.OBObject, context):
                 ]
             )
         )
-    context['ob_objects'][ob_object.name] = klass
+    if is_super_ob_object:
+        context['super_ob_objects'][ob_object.name] = klass
+    else:
+        context['ob_objects'][ob_object.name] = klass
 
 
 def assign_constant(name, value):
@@ -236,6 +239,7 @@ def assign_constant(name, value):
 def generate_module(ob_objects):
     context = dict(
         django_enum_classes={},
+        super_ob_objects={},
         ob_objects={},
         ob_arrays_of_element={},
     )
@@ -248,6 +252,7 @@ def generate_module(ob_objects):
             ast.ImportFrom(module='django.utils.translation', names=[ast.alias(name='gettext_lazy', asname='_')], level=0),
             # *(assign_constant(k, constants[k]) for k in sorted(constants.keys())),
             *(context['django_enum_classes'][k] for k in sorted(context['django_enum_classes'].keys())),
+            *(context['super_ob_objects'][k] for k in sorted(context['super_ob_objects'].keys())),
             *(context['ob_objects'][k] for k in sorted(context['ob_objects'].keys())),
             *(context['ob_arrays_of_element'][k] for k in sorted(context['ob_arrays_of_element'].keys())),
         ],
