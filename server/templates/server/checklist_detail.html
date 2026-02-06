@@ -1,0 +1,40 @@
+{% extends 'server/base.html' %}
+
+{% block header %}
+<div class='container'>
+    <h1 class='h2'>
+        Checklist: {{ checklist_template.ChecklistTemplateName_Value }}
+    </h1>
+</div>
+{% endblock %}
+
+{% block main %}
+<div class='container'>
+    {% for section, questions in sections_and_questions.items %}
+    <table class='table'>
+        <thead>
+            <tr>
+                <th scope='col' class='h4'>Section {{ forloop.counter }}: {{ section }}</th>
+                <th scope='col'></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% with section_counter=forloop.counter %}
+            {% for question in questions %}
+                <tr>
+                    <th scope='row'>{{ section_counter }}.{{ forloop.counter|stringformat:"02d" }}: {{ question.QuestionLabel_Value }}</th>
+                    <td>
+                        <select class="form-select" style='width: 20em' aria-label="Default select example">
+                        {% for option in question.AnswerOptions.values %}
+                            <option value="{{ forloop.counter }}">{{ option.Value }}</option>
+                        {% endfor %}
+                        </select>
+                    </td>
+                </tr>
+            {% endfor %}
+            {% endwith %}
+        </tbody>
+    </table>
+    {% endfor %}
+</div>
+{% endblock %}
