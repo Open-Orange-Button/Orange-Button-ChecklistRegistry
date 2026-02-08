@@ -1,66 +1,10 @@
 import ast
-from collections import defaultdict
 from functools import partial
+import keyword
 import itertools
 
-import ob_taxonomy.models as models
-
-
-def default_field_kwargs(ob_taxonomy_element: models.OBTaxonomyElement, **kwargs):
-    match ob_taxonomy_element.name:
-        case 'TaxonomyElementString':
-            return dict(blank=True, **kwargs)
-        case 'TaxonomyElementArrayBoolean':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-        case 'TaxonomyElementArrayInteger':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-        case 'TaxonomyElementArrayNumber':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-        case 'TaxonomyElementArrayString':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-        case _:
-            return dict(blank=True, null=True, **kwargs)
-
-
-# dict of functions Callable[models.OBTAxonomyElement]
-# we do not necessarily know the type of the field given only the item type.
-# If the itemtype is not decimal or integer item type, any item type that defines
-# units has unknown type without knowing the taxonomy element
-OB_ITEM_TYPE_FIELD_CONF = defaultdict(lambda: default_field_kwargs)
-OB_ITEM_TYPE_FIELD_CONF['LegalEntityIdentifierItemType'] = partial(default_field_kwargs, max_length=20)
-
-
-def taxonomy_element_to_django_field(ob_taxonomy_element: models.OBTaxonomyElement, field_kwargs):
-    match ob_taxonomy_element.name:
-        case 'TaxonomyElementBoolean':
-            field_class = 'BooleanField'
-        case 'TaxonomyElementInteger':
-            field_class = 'IntegerField'
-        case 'TaxonomyElementNumber':
-            field_class = 'DecimalField'
-        case 'TaxonomyElementString':
-            field_class = 'CharField'
-        case 'TaxonomyElementArrayBoolean':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-        case 'TaxonomyElementArrayInteger':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-        case 'TaxonomyElementArrayNumber':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-        case 'TaxonomyElementArrayString':
-            raise NotImplementedError(f'taxonomy_element_to_django_field: {ob_taxonomy_element.name}')
-    return ast.Call(
-        func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr=field_class, ctx=ast.Load()),
-        args=[],
-        keywords=[ast.keyword(arg=k, value=v) for k, v in field_kwargs.items()],
-    )
-
-
-
-# defining the fields
-# 1. What is the item type?
-#  a. Does the item type define enums? Then Value is a string with choices
-#  b. Does the item type define units? Then Value follows the TaxonomyElement used, and Units is a string with choices
-#  c. Are neither enums nor units defined? Then Value follows the TaxonomyElement used.
+from django.db import models
+import ob_taxonomy.models as ob_models
 
 
 def generate_django_enum_field(django_enum_name: str):
@@ -85,14 +29,14 @@ def generate_django_enum_field(django_enum_name: str):
     )
 
 
-def generate_django_enum_class(django_enum_name: str, enums: type[models.OBItemTypeEnum | models.OBItemTypeUnit]):
+def generate_django_enum_class(django_enum_name: str, enums: type[ob_models.OBItemTypeEnum | ob_models.OBItemTypeUnit]):
     return ast.ClassDef(
         name=django_enum_name,
         bases=[ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='TextChoices', ctx=ast.Load())],
         keywords=[],
         body=[
             ast.Assign(
-                targets=[ast.Name(id=e.name, ctx=ast.Store())],
+                targets=[ast.Name(id=e.name if e.name not in keyword.kwlist else f'{e.name}_', ctx=ast.Store())],
                 value=ast.Tuple(elts=[
                     ast.Constant(value=e.name),
                     ast.Call(
@@ -107,26 +51,69 @@ def generate_django_enum_class(django_enum_name: str, enums: type[models.OBItemT
     )
 
 
-def generate_ob_element(ob_element: models.OBElement, context=None):
-    context = context or dict(django_enum_class={})
+COMMON_KWARGS = dict(blank=True, null=True)
+DECIMAL_FIELD_KWARGS = dict(max_digits=32, decimal_places=16, **COMMON_KWARGS)
+CHAR_FIELD_KWARGS = dict(blank=True)
+OB_ITEM_TYPE_FIELD_CONF = dict(
+    DateTimeItemType=dict(func=partial(models.DateTimeField, **COMMON_KWARGS)),
+    DecimalItemType=dict(func=partial(models.DecimalField, **DECIMAL_FIELD_KWARGS)),
+    LegalEntityIdentifierItemType=dict(func=partial(models.CharField, **CHAR_FIELD_KWARGS, max_length=20)),
+    LengthItemType=dict(func=partial(models.DecimalField, **DECIMAL_FIELD_KWARGS)),
+    IntegerItemType=dict(func=partial(models.IntegerField, **COMMON_KWARGS)),
+    PlaneAngleItemType=dict(func=partial(models.DecimalField, **DECIMAL_FIELD_KWARGS)),
+    StringItemType=dict(func=partial(models.CharField, **CHAR_FIELD_KWARGS, max_length=2000)),
+    UUIDItemType=dict(
+        ast=ast.Call(
+            func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='UUIDField', ctx=ast.Load()),
+            args=[],
+            keywords=[
+                ast.keyword(arg='unique', value=ast.Constant(value=True)),
+                ast.keyword(arg='editable', value=ast.Constant(value=False)),
+                ast.keyword(arg='default', value=ast.Attribute(value=ast.Name(id='uuid', ctx=ast.Load()), attr='uuid4', ctx=ast.Load())),
+                ],
+        ),
+    ),
+)
+
+
+def item_type_to_django_field(ob_item_type: ob_models.OBItemType, ob_taxonomy_element: ob_models.OBTaxonomyElement):
+    field_info = OB_ITEM_TYPE_FIELD_CONF[ob_item_type.name]
+    if (field := field_info.get('func')) is not None:
+        return ast.Call(
+            func=ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr=field.func.__name__, ctx=ast.Load()),
+            args=[ast.Constant(value=v) for v in field.args],
+            keywords=[ast.keyword(arg=k, value=ast.Constant(value=v)) for k, v in field.keywords.items()],
+        )
+    elif 'ast' in field_info:
+        return field_info['ast']
+    else:
+        raise ValueError(f'OB_ITEM_TYPE_FIELD_CONF entry "{ob_item_type.name}" must be a dict with one of "func" or "ast" keys.')
+
+
+def generate_ob_element_fields(ob_element: ob_models.OBElement):
     fields = []
-    if ob_element.item_type.enums.exists():
-        django_enum_name = f'{ob_element.item_type.name}Enum'
-        django_enum_classes[django_enum_name] = generate_django_enum_class(django_enum_name, ob_element.item_type.enums)
-        value_field = generate_django_enum_field(django_enum_name)
-        fields.append(value_field)
+    if ob_element.item_type.enums.exists() and ob_element.item_type.name != 'UUIDItemType':
+        value_field = generate_django_enum_field(f'{ob_element.item_type.name}Enum')
+        fields.append(ast.Assign(
+            targets=[ast.Name(id=f'{ob_element.name}_Value', ctx=ast.Store())],
+            value=value_field,
+        ))
     else:
         if ob_element.item_type.units.exists():
-            django_enum_name = f'{ob_element.item_type.name}Unit'
-            django_enum_classes[django_enum_name] = generate_django_enum_class(django_enum_name, ob_element.item_type.units)
-            unit_field = generate_django_enum_field(django_enum_name)
-            fields.append(unit_field)
-            conf = OB_ITEM_TYPE_FIELD_CONF[ob_element.item_type](ob_element.taxonomy_element)
-            value_field = taxonomy_element_to_django_field(ob_element.taxonomy_element, conf['field_args'], conf['field_kwargs'])
-            fields.append(value_field)
+            unit_field = generate_django_enum_field(f'{ob_element.item_type.name}Unit')
+            fields.append(ast.Assign(
+                targets=[ast.Name(id=f'{ob_element.name}_Unit', ctx=ast.Store())],
+                value=unit_field,
+            ))
+        value_field = item_type_to_django_field(ob_element.item_type, ob_element.taxonomy_element)
+        fields.append(ast.Assign(
+            targets=[ast.Name(id=f'{ob_element.name}_Value', ctx=ast.Store())],
+            value=value_field,
+        ))
+    return fields
 
 
-def generate_ob_element_array(element_array: models.OBArrayOfElement):
+def generate_ob_element_array(element_array: ob_models.OBArrayOfElement):
     return ast.ClassDef(
         name=element_array.items.name,
         bases=[ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='Model', ctx=ast.Load())],
@@ -136,7 +123,7 @@ def generate_ob_element_array(element_array: models.OBArrayOfElement):
     )
 
 
-def generate_ob_object_array(object_array: models.OBArrayOfObject):
+def generate_ob_object_array(object_array: ob_models.OBArrayOfObject):
     return ast.ClassDef(
         name=object_array.items.name,
         bases=[ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='Model', ctx=ast.Load())],
@@ -146,8 +133,8 @@ def generate_ob_object_array(object_array: models.OBArrayOfObject):
     )
 
 
-def build_django_enum_class_context(ob_taxonomy_element: models.OBTaxonomyElement, ob_item_type: models.OBItemType, context):
-    if ob_item_type.enums.exists():
+def build_django_enum_class_context(ob_item_type: ob_models.OBItemType, context):
+    if ob_item_type.enums.exists() and ob_item_type.name != 'UUIDItemType':
         class_name = f'{ob_item_type.name}Enum'
         enums = ob_item_type.enums.all()
     elif ob_item_type.units.exists():
@@ -158,8 +145,8 @@ def build_django_enum_class_context(ob_taxonomy_element: models.OBTaxonomyElemen
     context['django_enum_classes'][class_name] = (class_name, enums)
 
 
-def build_ob_object_context(ob_object: models.OBObject, context):
-    if ob_object.name in context['super_objects'] or ob_object.name in context['objects']:
+def build_ob_object_context(ob_object: ob_models.OBObject, context, composes=False):
+    if ob_object.name in context['comprisal_objects'] or ob_object.name in context['objects']:
         return
     if ob_object.comprises.exists():
         if ob_object.comprises.through.objects.exclude(method='allOf').exists():
@@ -167,18 +154,19 @@ def build_ob_object_context(ob_object: models.OBObject, context):
         if ob_object.comprises.count() > 1:
             raise ValueError(f'Cannot generate Django model for {ob_object!r} because the comprisal of multiple OBObjects is not currently supported.')
         comprisal = ob_object.comprises.first()
-        build_ob_object_context(comprisal, context)
-        context['super_objects'][comprisal.name] = comprisal
+        build_ob_object_context(comprisal, context, composes=True)
+        context['comprisal_objects'][comprisal.name] = comprisal
     for ob_element in ob_object.properties.all():
-        build_django_enum_class_context(ob_element.taxonomy_element, ob_element.item_type, context)
+        build_django_enum_class_context(ob_element.item_type, context)
     for nested_object in ob_object.nested_objects.all():
         if nested_object.name not in context['objects']:
             build_ob_object_context(nested_object, context)
     for element_array in ob_object.element_arrays.all():
-        build_django_enum_class_context(element_array.items.taxonomy_element, element_array.items.item_type, context)
+        build_django_enum_class_context(element_array.items.item_type, context)
     for object_array in ob_object.object_arrays.all():
         build_ob_object_context(object_array.items, context)
-    context['objects'][ob_object.name] = ob_object
+    if not composes:
+        context['objects'][ob_object.name] = ob_object
 
 
 def generate_foreign_key(name):
@@ -206,7 +194,7 @@ def generate_manytomany(name, name_other):
     )
 
 
-def generate_ob_object(ob_object: models.OBObject):
+def generate_ob_object(ob_object: ob_models.OBObject):
     if ob_object.comprises.exists():
         bases = [ast.Name(id=ob_object.comprises.first().name)]
     else:
@@ -218,12 +206,12 @@ def generate_ob_object(ob_object: models.OBObject):
         body=[],
         decorator_list=[],
     )
-    # for ob_element in ob_object.properties.all().order_by('name'):
-    #     klass.body.extend(generate_ob_element_fields(ob_element))
+    for ob_element in ob_object.properties.all().order_by('name'):
+        klass.body.extend(generate_ob_element_fields(ob_element))
     for nested_object in ob_object.nested_objects.all().order_by('name'):
         klass.body.append(generate_foreign_key(nested_object.name))
     for array in itertools.chain(
-        # ob_object.element_arrays.all().order_by('name'),
+        ob_object.element_arrays.all().order_by('name'),
         ob_object.object_arrays.all().order_by('name')
     ):
         klass.body.append(generate_manytomany(array.name, array.items.name))
@@ -233,24 +221,32 @@ def generate_ob_object(ob_object: models.OBObject):
 def generate_model_module(ob_objects):
     context = dict(
         django_enum_classes={},
-        super_objects={},
+        comprisal_objects={},
         objects={},
-        object_arrays={},
         element_arrays={},
+        object_arrays={},
     )
     for ob_object in ob_objects:
         build_ob_object_context(ob_object, context)
     generators = dict(
         django_enum_classes=lambda v: generate_django_enum_class(*v),
-        super_objects=generate_ob_object,
+        comprisal_objects=generate_ob_object,
         objects=generate_ob_object,
+        element_arrays=generate_ob_element_array,
         object_arrays=generate_ob_object_array,
-        # element_arrays=generate_ob_element_array,
     )
     for (k, v), g in zip(context.items(), generators.values()):
-        context[k] = [g(v[kk]) for kk in sorted(v.keys())]
+        model_names = v.keys()
+        if k != 'comprisal_objects':
+            model_names = sorted(model_names)
+        context[k] = [g(v[kk]) for kk in model_names]
     tree = ast.Module(
-        body=list(itertools.chain.from_iterable(context.values())),
+        body=[
+            ast.Import(names=[ast.alias(name='uuid', asname=None)]),  # user should be responsible for these imports, i.e., required by django field default keyword arguments
+            ast.ImportFrom(module='django.db', names=[ast.alias(name='models')], level=0),
+            ast.ImportFrom(module='django.utils.translation', names=[ast.alias(name='gettext_lazy', asname='_')], level=0),
+            *itertools.chain.from_iterable(context.values())
+        ],
         type_ignores=[],
     )
     tree = ast.fix_missing_locations(tree)
@@ -258,5 +254,5 @@ def generate_model_module(ob_objects):
 
 
 def test():
-    tree = generate_model_module(models.OBObject.objects.filter(name='ChecklistTemplate'))
+    tree = generate_model_module(ob_models.OBObject.objects.filter(name='ChecklistTemplate'))
     print(ast.unparse(tree))
