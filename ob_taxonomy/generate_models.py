@@ -113,22 +113,15 @@ def generate_ob_element_fields(ob_element: ob_models.OBElement):
     return fields
 
 
-def generate_ob_element_array(element_array: ob_models.OBArrayOfElement):
+def generate_ob_element_table(ob_element: ob_models.OBElement):
+    fields = generate_ob_element_fields(ob_element)
+    for f in fields:
+        f.targets[0].id = f.targets[0].id.split('_')[-1]
     return ast.ClassDef(
-        name=element_array.items.name,
+        name=ob_element.name,
         bases=[ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='Model', ctx=ast.Load())],
         keywords=[],
-        body=generate_ob_element_fields(element_array.items),
-        decorator_list=[],
-    )
-
-
-def generate_ob_object_array(object_array: ob_models.OBArrayOfObject):
-    return ast.ClassDef(
-        name=object_array.items.name,
-        bases=[ast.Attribute(value=ast.Name(id='models', ctx=ast.Load()), attr='Model', ctx=ast.Load())],
-        keywords=[],
-        body=generate_foreign_key(object_array.items.name),
+        body=fields,
         decorator_list=[],
     )
 
@@ -163,6 +156,7 @@ def build_ob_object_context(ob_object: ob_models.OBObject, context, composes=Fal
             build_ob_object_context(nested_object, context)
     for element_array in ob_object.element_arrays.all():
         build_django_enum_class_context(element_array.items.item_type, context)
+        context['element_arrays'][element_array.items.name] = element_array.items
     for object_array in ob_object.object_arrays.all():
         build_ob_object_context(object_array.items, context)
     if not composes:
@@ -224,7 +218,6 @@ def generate_model_module(ob_objects):
         comprisal_objects={},
         objects={},
         element_arrays={},
-        object_arrays={},
     )
     for ob_object in ob_objects:
         build_ob_object_context(ob_object, context)
@@ -232,8 +225,7 @@ def generate_model_module(ob_objects):
         django_enum_classes=lambda v: generate_django_enum_class(*v),
         comprisal_objects=generate_ob_object,
         objects=generate_ob_object,
-        element_arrays=generate_ob_element_array,
-        object_arrays=generate_ob_object_array,
+        element_arrays=generate_ob_element_table,
     )
     for (k, v), g in zip(context.items(), generators.values()):
         model_names = v.keys()
