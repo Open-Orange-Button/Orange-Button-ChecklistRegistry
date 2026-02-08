@@ -228,3 +228,9 @@ class Scope(models.Model):
     ScopeID_Value = models.CharField(blank=True, max_length=2000)
     ScopeType_Value = models.CharField(max_length=max(map(len, ScopeTypeItemTypeEnum)), choices=ScopeTypeItemTypeEnum)
     Location = models.ForeignKey('Location', on_delete=models.CASCADE)
+
+class AnswerOption(models.Model):
+    Value = models.CharField(blank=True, max_length=2000)
+
+class Tag(models.Model):
+    Value = models.CharField(blank=True, max_length=2000)
