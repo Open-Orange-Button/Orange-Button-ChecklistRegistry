@@ -116,7 +116,7 @@ class Entity(models.Model):
     Email_Value = models.CharField(blank=True, max_length=2000)
     EntityRole_Value = models.CharField(max_length=max(map(len, EntityRoleItemTypeEnum)), choices=EntityRoleItemTypeEnum)
     LegalEntityIdentifier_Value = models.CharField(blank=True, max_length=20)
-    TaxID_Value = models.CharField(blank=True, max_length=2000)
+    TaxID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     URL_Value = models.CharField(blank=True, max_length=2000)
     WorkPhone_Value = models.CharField(blank=True, max_length=2000)
     Addresses = models.ManyToManyField('Address')
@@ -129,7 +129,7 @@ class Address(models.Model):
     AddrLine1_Value = models.CharField(blank=True, max_length=2000)
     AddrLine2_Value = models.CharField(blank=True, max_length=2000)
     AddrLine3_Value = models.CharField(blank=True, max_length=2000)
-    AddressID_Value = models.CharField(blank=True, max_length=2000)
+    AddressID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     AddressType_Value = models.CharField(blank=True, max_length=2000)
     City_Value = models.CharField(blank=True, max_length=2000)
     Country_Value = models.CharField(blank=True, max_length=2000)
@@ -167,7 +167,7 @@ class Comment(models.Model):
     Contacts = models.ManyToManyField('Contact')
 
 class Contact(models.Model):
-    ContactID_Value = models.CharField(blank=True, max_length=2000)
+    ContactID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     ContactType_Value = models.CharField(max_length=max(map(len, ContactTypeItemTypeEnum)), choices=ContactTypeItemTypeEnum)
     Description_Value = models.CharField(blank=True, max_length=2000)
     Email_Value = models.CharField(blank=True, max_length=2000)
@@ -196,7 +196,7 @@ class Location(models.Model):
     Latitude_Unit = models.CharField(max_length=max(map(len, PlaneAngleItemTypeUnit)), choices=PlaneAngleItemTypeUnit)
     Latitude_Value = models.DecimalField(max_digits=32, decimal_places=16, blank=True, null=True)
     LocationDeterminationMethod_Value = models.CharField(max_length=max(map(len, LocationDeterminationMethodItemTypeEnum)), choices=LocationDeterminationMethodItemTypeEnum)
-    LocationID_Value = models.CharField(blank=True, max_length=2000)
+    LocationID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     LocationType_Value = models.CharField(max_length=max(map(len, LocationTypeItemTypeEnum)), choices=LocationTypeItemTypeEnum)
     Longitude_Unit = models.CharField(max_length=max(map(len, PlaneAngleItemTypeUnit)), choices=PlaneAngleItemTypeUnit)
     Longitude_Value = models.DecimalField(max_digits=32, decimal_places=16, blank=True, null=True)
@@ -214,7 +214,7 @@ class Question(models.Model):
     AnswerType_Value = models.CharField(max_length=max(map(len, AnswerTypeItemTypeEnum)), choices=AnswerTypeItemTypeEnum)
     DisplaySeqNumber_Value = models.IntegerField(blank=True, null=True)
     QuestionHelp_Value = models.CharField(blank=True, max_length=2000)
-    QuestionID_Value = models.CharField(blank=True, max_length=2000)
+    QuestionID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     QuestionLabel_Value = models.CharField(blank=True, max_length=2000)
     QuestionUnits_Value = models.CharField(blank=True, max_length=2000)
     RequirementLevel_Value = models.CharField(max_length=max(map(len, RequirementLevelItemTypeEnum)), choices=RequirementLevelItemTypeEnum)
@@ -225,12 +225,18 @@ class Question(models.Model):
 class Scope(models.Model):
     Description_Value = models.CharField(blank=True, max_length=2000)
     FileFolderURL_Value = models.CharField(blank=True, max_length=2000)
-    ScopeID_Value = models.CharField(blank=True, max_length=2000)
+    ScopeID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     ScopeType_Value = models.CharField(max_length=max(map(len, ScopeTypeItemTypeEnum)), choices=ScopeTypeItemTypeEnum)
     Location = models.ForeignKey('Location', on_delete=models.CASCADE)
 
 class AnswerOption(models.Model):
-    Value = models.CharField(blank=True, max_length=2000)
+    Value = models.CharField(blank=True, unique=True, max_length=2000)
+
+    def __str__(self):
+        return self.Value
 
 class Tag(models.Model):
     Value = models.CharField(blank=True, max_length=2000)
+
+    def __str__(self):
+        return self.Value
