@@ -5,6 +5,9 @@
     <h1 class='h3'>
         Checklist: {{ checklist_template.ChecklistTemplateName_Value }}
     </h1>
+    <h6>
+        ID: {{ checklist_template.ChecklistTemplateID_Value }}
+    </h6>
 </div>
 {% endblock %}
 
@@ -43,7 +46,7 @@
         </div>
         <div class='col-3'>
             <div class='sticky-top'>
-                <label for="checklist-template-toc" class="h5">Checklist sections</label>
+                <label for="checklist-template-toc" class="h5 mt-5">Checklist sections</label>
                 <div id="checklist-template-toc" class="list-group">
                     {% for section, questions_and_fields in sections_and_questions.items %}
                     <a class="list-group-item list-group-item-action" href="#section_{{ forloop.counter }}">
