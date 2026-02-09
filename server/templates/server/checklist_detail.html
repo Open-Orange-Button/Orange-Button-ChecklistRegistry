@@ -9,30 +9,50 @@
 {% endblock %}
 
 {% block main %}
-<div class='container'>
-    {% for section, questions_and_fields in sections_and_questions.items %}
-        <div class='row'>
-            <div class='col'>
-                <h5 style='margin-bottom: 0rem; margin-top: .5rem'>
-                Section {{ forloop.counter }}: {{ section }}
-                </h5>
-                <hr style='margin-top: 0rem'>
+<div class='container mt-2 mb-5'>
+    <div class='row'>
+        <div class='col-9'>
+            {% for section, questions_and_fields in sections_and_questions.items %}
+            <div class='row'>
+                <div class='col-9'>
+                    <h5 style='margin-bottom: 0rem; margin-top: .5rem'>
+                        Section {{ forloop.counter }}: {{ section }}
+                    </h5>
+                    <hr style='margin-top: 0rem'>
+                </div>
+            </div>
+            {% with section_counter=forloop.counter %}
+            <div class='row' id='section_{{ forloop.counter }}'>
+                <div class='col-sm-0'>
+                    {% for question, field in questions_and_fields %}
+                    <div class='row gx-5 px-4 justify-content-start'>
+                        <div class='col-sm-5'>
+                            <label class='h6' for='{{ field.id_for_label }}'>{{ section_counter }}.{{ forloop.counter|stringformat:"02d" }}: {{ question.QuestionLabel_Value }}</h6>
+                        </div>
+                        <div class='col-sm-4'>
+                            <div class='input-group'>
+                                {{ field }}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endwith %}
+            {% endfor %}
+        </div>
+        <div class='col-3'>
+            <div class='sticky-top'>
+                <label for="checklist-template-toc" class="h5">Checklist sections</label>
+                <div id="checklist-template-toc" class="list-group">
+                    {% for section, questions_and_fields in sections_and_questions.items %}
+                    <a class="list-group-item list-group-item-action" href="#section_{{ forloop.counter }}">
+                        Section {{ forloop.counter }}: {{ section }}
+                    </a>
+                    {% endfor %}
+                </div>
             </div>
         </div>
-        {% with section_counter=forloop.counter %}
-            {% for question, field in questions_and_fields %}
-                <div class='row gx-5 px-4 justify-content-start'>
-                    <div class='col-5'>
-                        <label class='h6' for='{{ field.id_for_label }}'>{{ section_counter }}.{{ forloop.counter|stringformat:"02d" }}: {{ question.QuestionLabel_Value }}</h6>
-                    </div>
-                    <div class='col-4'>
-                    <div class='input-group'>
-                        {{ field }}
-                    </div>
-                    </div>
-                </div>
-            {% endfor %}
-        {% endwith %}
-    {% endfor %}
+    </div>
 </div>
 {% endblock %}
