@@ -19,6 +19,7 @@ def question_to_form_field(question: models.Question):
                 ],
                 keywords=[
                     ast.keyword(arg='label', value=ast.Constant(value=question.QuestionLabel_Value)),
+                    ast.keyword(arg='required', value=ast.Constant(value=question.RequirementLevel_Value == models.RequirementLevelItemTypeEnum.Required)),
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='TextInput', ctx=ast.Load()),
                         args=[],
@@ -33,6 +34,7 @@ def question_to_form_field(question: models.Question):
                 ],
                 keywords=[
                     ast.keyword(arg='label', value=ast.Constant(value=question.QuestionLabel_Value)),
+                    ast.keyword(arg='required', value=ast.Constant(value=question.RequirementLevel_Value == models.RequirementLevelItemTypeEnum.Required)),
                     ast.keyword(arg='choices', value=ast.List(
                         elts=[
                             ast.Tuple(elts=[ast.Constant(value=a.id), ast.Constant(value=a.Value)], ctx=ast.Load())
@@ -54,6 +56,7 @@ def question_to_form_field(question: models.Question):
                 ],
                 keywords=[
                     ast.keyword(arg='label', value=ast.Constant(value=question.QuestionLabel_Value)),
+                    ast.keyword(arg='required', value=ast.Constant(value=question.RequirementLevel_Value == models.RequirementLevelItemTypeEnum.Required)),
                     ast.keyword(arg='choices', value=ast.List(
                         elts=[
                             ast.Tuple(elts=[ast.Constant(value=a.id), ast.Constant(value=a.Value)], ctx=ast.Load())
@@ -75,6 +78,7 @@ def question_to_form_field(question: models.Question):
                 ],
                 keywords=[
                     ast.keyword(arg='label', value=ast.Constant(value=question.QuestionLabel_Value)),
+                    ast.keyword(arg='required', value=ast.Constant(value=question.RequirementLevel_Value == models.RequirementLevelItemTypeEnum.Required)),
                     ast.keyword(arg='localize', value=ast.Constant(value=False)),
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='NumberInput', ctx=ast.Load()),
@@ -90,6 +94,7 @@ def question_to_form_field(question: models.Question):
                 ],
                 keywords=[
                     ast.keyword(arg='label', value=ast.Constant(value=question.QuestionLabel_Value)),
+                    ast.keyword(arg='required', value=ast.Constant(value=question.RequirementLevel_Value == models.RequirementLevelItemTypeEnum.Required)),
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='SelectDateWidget', ctx=ast.Load()),
                         args=[],
@@ -104,6 +109,7 @@ def question_to_form_field(question: models.Question):
                 ],
                 keywords=[
                     ast.keyword(arg='label', value=ast.Constant(value=question.QuestionLabel_Value)),
+                    ast.keyword(arg='required', value=ast.Constant(value=question.RequirementLevel_Value == models.RequirementLevelItemTypeEnum.Required)),
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='URLInput', ctx=ast.Load()),
                         args=[],
@@ -118,6 +124,7 @@ def question_to_form_field(question: models.Question):
                 ],
                 keywords=[
                     ast.keyword(arg='label', value=ast.Constant(value=question.QuestionLabel_Value)),
+                    ast.keyword(arg='required', value=ast.Constant(value=question.RequirementLevel_Value == models.RequirementLevelItemTypeEnum.Required)),
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='ClearableFileInput', ctx=ast.Load()),
                         args=[],
