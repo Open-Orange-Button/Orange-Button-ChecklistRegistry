@@ -1,3 +1,13 @@
 #navbar-logo {
-    max-width: 2.5em;
+    max-width: 3.5rem;
+}
+
+.form-control {
+    padding-top: .2rem;
+    padding-bottom: .2rem;
+}
+
+.form-select {
+    padding-top: .2rem;
+    padding-bottom: .2rem;
 }

@@ -22,14 +22,7 @@ def question_to_form_field(question: models.Question):
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='TextInput', ctx=ast.Load()),
                         args=[],
-                        keywords=[
-                            ast.keyword(arg='attrs', value=ast.Dict(**dict(zip(('keys', 'values'), map(list, zip(*[
-                                (ast.Constant(value=k), ast.Constant(value=v)) for k,v in {
-                                    'class': 'form-control',
-                                    'style': 'padding-top: 0.1rem;padding-bottom: 0.1rem;',
-                                }.items()
-                            ])))))),
-                        ]
+                        keywords=[]
                     ))
                 ],
             )
@@ -50,14 +43,7 @@ def question_to_form_field(question: models.Question):
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='Select', ctx=ast.Load()),
                         args=[],
-                        keywords=[
-                            ast.keyword(arg='attrs', value=ast.Dict(**dict(zip(('keys', 'values'), map(list, zip(*[
-                                (ast.Constant(value=k), ast.Constant(value=v)) for k,v in {
-                                    'class': 'form-select',
-                                    'style': 'padding-top: 0.1rem;padding-bottom: 0.1rem;',
-                                }.items()
-                            ])))))),
-                        ]
+                        keywords=[]
                     ))
                 ],
             )
@@ -78,14 +64,7 @@ def question_to_form_field(question: models.Question):
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='SelectMultiple', ctx=ast.Load()),
                         args=[],
-                        keywords=[
-                            ast.keyword(arg='attrs', value=ast.Dict(**dict(zip(('keys', 'values'), map(list, zip(*[
-                                (ast.Constant(value=k), ast.Constant(value=v)) for k,v in {
-                                    'class': 'form-select',
-                                    'style': 'padding-top: 0.1rem;padding-bottom: 0.1rem;',
-                                }.items()
-                            ])))))),
-                        ]
+                        keywords=[]
                     ))
                 ],
             )
@@ -100,14 +79,7 @@ def question_to_form_field(question: models.Question):
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='NumberInput', ctx=ast.Load()),
                         args=[],
-                        keywords=[
-                            ast.keyword(arg='attrs', value=ast.Dict(**dict(zip(('keys', 'values'), map(list, zip(*[
-                                (ast.Constant(value=k), ast.Constant(value=v)) for k,v in {
-                                    'class': 'form-control',
-                                    'style': 'padding-top: 0.1rem;padding-bottom: 0.1rem;',
-                                }.items()
-                            ])))))),
-                        ]
+                        keywords=[]
                     ))
                 ],
             )
@@ -121,14 +93,7 @@ def question_to_form_field(question: models.Question):
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='SelectDateWidget', ctx=ast.Load()),
                         args=[],
-                        keywords=[
-                            ast.keyword(arg='attrs', value=ast.Dict(**dict(zip(('keys', 'values'), map(list, zip(*[
-                                (ast.Constant(value=k), ast.Constant(value=v)) for k,v in {
-                                    'class': 'form-select',
-                                    'style': 'padding-top: 0.1rem;padding-bottom: 0.1rem;',
-                                }.items()
-                            ])))))),
-                        ]
+                        keywords=[]
                     ))
                 ],
             )
@@ -142,14 +107,7 @@ def question_to_form_field(question: models.Question):
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='URLInput', ctx=ast.Load()),
                         args=[],
-                        keywords=[
-                            ast.keyword(arg='attrs', value=ast.Dict(**dict(zip(('keys', 'values'), map(list, zip(*[
-                                (ast.Constant(value=k), ast.Constant(value=v)) for k,v in {
-                                    'class': 'form-control',
-                                    'style': 'padding-top: 0.1rem;padding-bottom: 0.1rem;',
-                                }.items()
-                            ])))))),
-                        ]
+                        keywords=[]
                     ))
                 ],
             )
@@ -163,14 +121,7 @@ def question_to_form_field(question: models.Question):
                     ast.keyword(arg='widget', value=ast.Call(
                         func=ast.Attribute(value=ast.Name(id='forms', ctx=ast.Load()), attr='ClearableFileInput', ctx=ast.Load()),
                         args=[],
-                        keywords=[
-                            ast.keyword(arg='attrs', value=ast.Dict(**dict(zip(('keys', 'values'), map(list, zip(*[
-                                (ast.Constant(value=k), ast.Constant(value=v)) for k,v in {
-                                    'class': 'form-control',
-                                    'style': 'padding-top: 0.1rem;padding-bottom: 0.1rem;',
-                                }.items()
-                            ])))))),
-                        ]
+                        keywords=[]
                     ))
                 ],
             )
