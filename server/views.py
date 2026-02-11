@@ -175,6 +175,11 @@ def checklist_detail(request, ChecklistTemplateID_Value):
         request,
         'server/checklist_detail.html',
         dict(
+            other_checklist_templates=(
+                models.ChecklistTemplate.objects
+                .values_list('ChecklistTemplateName_Value', 'ChecklistTemplateID_Value')
+                .order_by('ChecklistTemplateName_Value')
+            ),
             checklist_template=checklist_template,
             sections_and_questions=dict(sections_and_questions),
         ),

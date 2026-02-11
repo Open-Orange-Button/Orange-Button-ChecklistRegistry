@@ -6,54 +6,68 @@
 {% block main %}
 <div class='container ms-5 me-0 mt-3 mb-4'>
 <div class='row justify-content-start'>
-    <div class='col-2 me-5'>
+    <div class='col-3 me-5'>
         <div class='sticky-top'>
-            <label for='checklist-template-toc' class='h5 mt-5'>Sections</label>
-            <div id='checklist-template-toc' class='list-group'>
-                {% for section, questions_and_fields in sections_and_questions.items %}
-                <a class='list-group-item list-group-item-action' href='#section_{{ forloop.counter }}'>
-                    {{ forloop.counter }}: {{ section }}
-                </a>
-                {% endfor %}
+            <div class='row'>
+                <div class='col'>
+                    <label for='checklist-template-toc' class='h5 mt-5'>Sections</label>
+                    <div id='checklist-template-toc' class='list-group'>
+                        {% for section, questions_and_fields in sections_and_questions.items %}
+                        <a class='list-group-item list-group-item-action' href='#section_{{ forloop.counter }}'>
+                            {{ forloop.counter }}: {{ section }}
+                        </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class='row mt-3'>
+                <div class='col text-center'>
+                    <button type='button' class='btn btn-warning mt-2'>
+                        <i class='bi bi-download'></i> Download OB JSON
+                    </button>
+                </div>
+            </div>
+            <div class='row mt-3'>
+                <div class='col'>
+                    <h5>Checklist Template Information</h5>
+                    <h6>
+                        Maintainer:
+                        <a class='link-opacity-100' href='#'>
+                            {{ checklist_template.ChecklistTemplateMaintainer.ChecklistTemplateMaintainerName_Value }}
+                        </a>
+                    </h6>
+                    <h6>
+                        Version: {{ checklist_template.ChecklistTemplateVersion_Value }}
+                    </h6>
+                    <h6>
+                        Description: {{ checklist_template.Description_Value }}
+                    </h6>
+                </div>
             </div>
         </div>
     </div>
-    <div class='col-7'>
+    <div class='col-8'>
         <div class='row'>
             <div class='col'>
-                <div class='accordion' id='checklist-template-header'>
-                    <div class='accordion-item'>
-                        <h1 class='h3 accordion-header'>
-                          <button class='accordion-button' type='button' data-bs-toggle='collapse' data-bs-target='#checklist-template-metadata' aria-expanded='true' aria-controls='collapseOne'>
-                              <h4>
-                                  Checklist Template: {{ checklist_template.ChecklistTemplateName_Value }}
-                              </h4>
-                          </button>
-                        </h1>
-                        <div id='checklist-template-metadata' class='accordion-collapse collapse show' data-bs-parent="#checklist-template-header">
-                            <div class='accordion-body'>
-                                <div class='row'>
-                                    <div class='col'>
-                                        ID: {{ checklist_template.ChecklistTemplateID_Value }}
-                                    </div>
-                                    <div class='col'>
-                                        Version: {{ checklist_template.ChecklistTemplateVersion_Value }}
-                                    </div>
-                                </div>
-                                <div class='row'>
-                                    <div class='col'>
-                                        Maintainer: {{ checklist_template.ChecklistTemplateMaintainer.ChecklistTemplateMaintainerName_Value }}
-                                    </div>
-                                </div>
-                                <div class='row'>
-                                    <div class='col'>
-                                        Description: {{ checklist_template.Description_Value }}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h1 class='h3'>
+                    Checklist Template:
+                    <button class="btn btn-outline-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        {{ checklist_template.ChecklistTemplateName_Value }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% for checklist_template_name, checklist_template_id in other_checklist_templates %}
+                            <li>
+                                <a
+                                    class='dropdown-item {% if checklist_template_name == checklist_template.ChecklistTemplateName_Value %}active{% endif %}'
+                                    href='{% url 'detail' checklist_template_id %}'
+                                    {% if checklist_template_name == checklist_template.ChecklistTemplateName_Value %}aria-current='true'{% endif %}
+                                >
+                                    {{ checklist_template_name }}
+                                </a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </h1>
             </div>
         </div>
         {% for section, questions_and_fields in sections_and_questions.items %}
@@ -70,10 +84,10 @@
             <div class='col'>
                 {% for question, field in questions_and_fields %}
                 <div class='row gx-5 px-4 justify-content-start'>
-                    <div class='col-sm-6'>
+                    <div class='col'>
                         <label class='h6' for='{{ field.id_for_label }}'>{{ section_counter }}.{{ forloop.counter|stringformat:'02d' }}: {{ question.QuestionLabel_Value }}</h6>
                     </div>
-                    <div class='col-sm-6'>
+                    <div class='col'>
                         <div class='input-group'>
                             {{ field }}
                         </div>
@@ -84,11 +98,6 @@
         </div>
         {% endwith %}
         {% endfor %}
-    </div>
-    <div class='col-2 text-end'>
-        <button type='button' class='btn btn-primary mt-2'>
-            <i class='bi bi-download'></i> Download OB JSON
-        </button>
     </div>
 </div>
 </div>
