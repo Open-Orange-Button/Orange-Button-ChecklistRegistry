@@ -101,8 +101,10 @@
                         </button>
                         <div class='collapse' id='collapse-{{ field.id_for_label}}'>
                             <div class='card card-body'>
+                                {% if question.QuestionHelp_Value != '' %}
                                 <h6 class='text-start'>Help</h6>
                                 {{ question.QuestionHelp_Value }}
+                                {% endif %}
                             </div>
                         </div>
                     </div>
