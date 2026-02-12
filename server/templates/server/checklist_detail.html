@@ -47,20 +47,20 @@
                     <button class="btn btn-outline-primary btn-lg dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                         {{ checklist_template.ChecklistTemplateName_Value }}
                     </button>
+                    <ul class="dropdown-menu">
+                        {% for checklist_template_name, checklist_template_id in other_checklist_templates %}
+                        <li>
+                            <a
+                                class='dropdown-item {% if checklist_template_name == checklist_template.ChecklistTemplateName_Value %}active{% endif %}'
+                                href='{% url 'detail' checklist_template_id %}'
+                                {% if checklist_template_name == checklist_template.ChecklistTemplateName_Value %}aria-current='true'{% endif %}
+                                >
+                                {{ checklist_template_name }}
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
                 </h1>
-                <ul class="dropdown-menu">
-                    {% for checklist_template_name, checklist_template_id in other_checklist_templates %}
-                    <li>
-                        <a
-                            class='dropdown-item {% if checklist_template_name == checklist_template.ChecklistTemplateName_Value %}active{% endif %}'
-                            href='{% url 'detail' checklist_template_id %}'
-                            {% if checklist_template_name == checklist_template.ChecklistTemplateName_Value %}aria-current='true'{% endif %}
-                            >
-                            {{ checklist_template_name }}
-                        </a>
-                    </li>
-                    {% endfor %}
-                </ul>
             </div>
             <div class='col text-end'>
                 <button type='button' class='btn btn-warning btn-lg ms-5'>
