@@ -33,6 +33,12 @@
                         Version: {{ checklist_template.ChecklistTemplateVersion_Value }}
                     </h6>
                     <h6>
+                        Tags:
+                        {% for tag in checklist_template.Tags.all %}
+                            <a href='#' class='badge text-bg-primary'>{{ tag.Value }}</a>
+                        {% endfor %}
+                    </h6>
+                    <h6>
                         Description: {{ checklist_template.Description_Value }}
                     </h6>
                 </div>
@@ -83,7 +89,20 @@
                 {% for question, field in questions_and_fields %}
                 <div class='row gx-5 px-4 justify-content-start'>
                     <div class='col'>
-                        <label class='h6' for='{{ field.id_for_label }}'>{{ section_counter }}.{{ forloop.counter|stringformat:'02d' }}: {{ question.QuestionLabel_Value }}</h6>
+                        <button
+                            class='btn btn-outline-primary dropdown-toggle checklist-template-question-label-collapse-btn'
+                            for='{{ field.id_for_label }}'
+                            data-bs-toggle='collapse'
+                            href='#collapse-{{ field.id_for_label }}'
+                            aria-expanded='false' aria-controls='collapse-{{ field.id_for_label }}'
+                        >
+                            {{ section_counter }}.{{ forloop.counter|stringformat:'02d' }}: {{ question.QuestionLabel_Value }}
+                        </button>
+                            <div class='collapse' id='collapse-{{ field.id_for_label}}'>
+                            <div class='card card-body'>
+                                {{ question.QuestionHelp_Value }}
+                            </div>
+                        </div>
                     </div>
                     <div class='col'>
                         <div class='input-group'>

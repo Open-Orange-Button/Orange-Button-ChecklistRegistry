@@ -11,3 +11,9 @@
     padding-top: .2rem;
     padding-bottom: .2rem;
 }
+.checklist-template-question-label-collapse-btn {
+    --bs-btn-color: none;
+    --bs-btn-border-color: none;
+    padding-top: .2rem;
+    padding-bottom: .2rem;
+}
