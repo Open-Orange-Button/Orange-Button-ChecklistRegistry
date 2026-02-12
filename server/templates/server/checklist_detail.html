@@ -90,15 +90,16 @@
                 <div class='row gx-5 px-4 justify-content-start'>
                     <div class='col'>
                         <button
-                            class='btn btn-outline-primary dropdown-toggle checklist-template-question-label-collapse-btn'
+                            class='label btn btn-outline-primary dropdown-toggle checklist-template-question-label-collapse-btn'
                             for='{{ field.id_for_label }}'
+                            type='button'
                             data-bs-toggle='collapse'
                             href='#collapse-{{ field.id_for_label }}'
                             aria-expanded='false' aria-controls='collapse-{{ field.id_for_label }}'
                         >
                             {{ section_counter }}.{{ forloop.counter|stringformat:'02d' }}: {{ question.QuestionLabel_Value }}
                         </button>
-                            <div class='collapse' id='collapse-{{ field.id_for_label}}'>
+                        <div class='collapse' id='collapse-{{ field.id_for_label}}'>
                             <div class='card card-body'>
                                 {{ question.QuestionHelp_Value }}
                             </div>

@@ -16,4 +16,6 @@
     --bs-btn-border-color: none;
     padding-top: .2rem;
     padding-bottom: .2rem;
+    white-space: wrap;
+    text-align: left;
 }
