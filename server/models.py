@@ -154,6 +154,17 @@ class ChecklistTemplate(models.Model):
     Tags = models.ManyToManyField('Tag')
     Questions = models.ManyToManyField('Question')
 
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=[
+                    'ChecklistTemplateID_Value',
+                    'ChecklistTemplateVersion_Value',
+                ],
+                name='unique_checklist_template_id_version',
+            )
+        ]
+
 class ChecklistTemplateMaintainer(Entity):
     ChecklistTemplateMaintainerID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
     ChecklistTemplateMaintainerName_Value = models.CharField(blank=True, max_length=500)
@@ -236,7 +247,7 @@ class AnswerOption(models.Model):
         return self.Value
 
 class Tag(models.Model):
-    Value = models.CharField(blank=True, max_length=500)
+    Value = models.CharField(blank=True, unique=True, max_length=500)
 
     def __str__(self):
         return self.Value
