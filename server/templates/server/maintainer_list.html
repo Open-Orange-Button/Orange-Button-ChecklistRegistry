@@ -1,0 +1,19 @@
+{% extends 'server/base.html' %}
+
+{% block main %}
+<div class='container mt-3 mb-4'>
+    <h1>Checklist Template Maintainers</h1>
+    {% for maintainer in maintainers %}
+        <h2 class='h4'>
+            <a
+                type='button'
+                class='btn btn-outline-primary btn-short text-start'
+                style='width: 100%; font-size: 1.4rem;'
+                href='{% url 'maintainer:detail' maintainer.ChecklistTemplateMaintainerID_Value %}'
+                >
+                {{ maintainer.ChecklistTemplateMaintainerName_Value }}
+            </a>
+        </h2>
+    {% endfor %}
+</div>
+{% endblock %}

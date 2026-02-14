@@ -1,0 +1,66 @@
+{% extends 'server/base.html' %}
+
+{% block title %}{{ maintainer.ChecklistTemplateMaintainerName_Value}} - {{ block.super }}{% endblock %}
+
+{% block main %}
+<div class='container mt-3 mb-4'>
+    <div class='row'>
+        <div class='col'>
+            <h1>{{ maintainer.ChecklistTemplateMaintainerName_Value }}</h1>
+        </div>
+        <div class='col text-end'>
+            <a
+                type='button'
+                class='btn btn-warning btn-lg ms-5'
+                href='{% url 'maintainer:json' maintainer.ChecklistTemplateMaintainerID_Value %}'
+            >
+                <i class='bi bi-download'></i> Download OB JSON
+            </a>
+        </div>
+    </div>
+    <div class='row'>
+        <div class='col'>
+            <div class='card card-body'>
+                <h2 class='h6'>
+                    URL:
+                    <a
+                        class='link-opacity-100'
+                        href='{{ maintainer.URL_Value }}'
+                        target='_blank'
+                        >{{ maintainer.URL_Value }}
+                    </a>
+                </h2>
+                <h2 class='h6'>
+                    Email:
+                    <a
+                        class='link-opacity-100'
+                        href='mailto:{{ maintainer.Email_Value }}'
+                        >{{ maintainer.Email_Value }}
+                    </a>
+                </h2>
+                <h2 class='h6'>
+                    Work Phone:
+                    {{ maintainer.WorkPhone_Value }}
+                </h2>
+            </div>
+        </div>
+    </div>
+    <div class='row mt-2'>
+        <div class='col'>
+            <h2 class='h4'>Checklist Templates</h2>
+        </div>
+    </div>
+    {% for checklist_template in maintainer.checklisttemplate_set.all|dictsort:'ChecklistTemplateName_Value' %}
+        <h4>
+        <a
+                type='button'
+                class='btn btn-outline-primary btn-short text-start'
+                style='width: 100%; font-size: 1.4rem;'
+                href='{% url 'checklisttemplate:detail' checklist_template.ChecklistTemplateID_Value %}'
+                >
+                {{ checklist_template.ChecklistTemplateName_Value }}
+            </a>
+        </h4>
+    {% endfor %}
+</div>
+{% endblock %}

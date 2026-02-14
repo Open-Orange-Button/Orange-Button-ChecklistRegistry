@@ -167,7 +167,28 @@ def index(request):
         ChecklistTemplateMaintainer__ChecklistTemplateMaintainerName_Value='Blu Banyan',
         ChecklistTemplateName_Value='Residential Installation'
     )
-    return HttpResponseRedirect(reverse('server:checklisttemplate-detail', args=[checklist_template.ChecklistTemplateID_Value]))
+    return HttpResponseRedirect(reverse('checklisttemplate:detail', args=[checklist_template.ChecklistTemplateID_Value]))
+
+
+def maintainer_detail(request, ChecklistTemplateMaintainerID_Value):
+    maintainer = get_object_or_404(models.ChecklistTemplateMaintainer, ChecklistTemplateMaintainerID_Value=ChecklistTemplateMaintainerID_Value)
+    return render(
+        request,
+        'server/maintainer_detail.html',
+        dict(
+            maintainer=maintainer,
+        ),
+    )
+
+
+def maintainer_list(request):
+    return render(
+        request,
+        'server/maintainer_list.html',
+        dict(
+            maintainers=models.ChecklistTemplateMaintainer.objects.all().order_by('ChecklistTemplateMaintainerName_Value'),
+        ),
+    )
 
 
 def checklist_detail(request, ChecklistTemplateID_Value):
@@ -218,6 +239,14 @@ def model_to_ob_json(model):
             for v in getattr(model, object_array.name).all()
         ]
     return ob_json
+
+
+def maintainer_json(request, ChecklistTemplateMaintainerID_Value):
+    maintainer = get_object_or_404(models.ChecklistTemplateMaintainer, ChecklistTemplateMaintainerID_Value=ChecklistTemplateMaintainerID_Value)
+    ob_json = model_to_ob_json(maintainer)
+    response = JsonResponse(ob_json, json_dumps_params=dict(indent=4))
+    response['Content-Disposition'] = f'attachment; filename="{maintainer.ChecklistTemplateMaintainerID_Value}.json"'
+    return response
 
 
 def checklist_json(request, ChecklistTemplateID_Value):

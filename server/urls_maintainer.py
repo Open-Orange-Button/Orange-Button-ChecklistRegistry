@@ -2,8 +2,9 @@ from django.urls import path
 
 from . import views
 
-app_name = 'server'
+app_name = 'maintainer'
 urlpatterns = [
-    path("<uuid:ChecklistTemplateID_Value>", views.checklist_detail, name="checklisttemplatemaintainer-detail"),
-    path("<uuid:ChecklistTemplateID_Value>/json", views.checklist_json, name="checklisttemplatemaintainer-json"),
+    path('', views.maintainer_list, name='list'),
+    path('<uuid:ChecklistTemplateMaintainerID_Value>', views.maintainer_detail, name='detail'),
+    path('<uuid:ChecklistTemplateMaintainerID_Value>/json', views.maintainer_json, name='json'),
 ]

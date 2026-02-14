@@ -19,8 +19,8 @@ from django.urls import include, path
 from django.views.generic import RedirectView
 
 urlpatterns = [
-    path("", RedirectView.as_view(pattern_name='server:checklisttemplate-index', permanent=True), name='index'),
-    path("checklisttemplate/", include("server.urls")),
-    path("checklisttemplatemaintainer/", include("server.urls_maintainer")),
+    path('', RedirectView.as_view(pattern_name='checklisttemplate:index', permanent=True), name='index'),
+    path('checklisttemplate/', include('server.urls')),
+    path('checklisttemplatemaintainer/', include('server.urls_maintainer')),
     path('admin/', admin.site.urls),
 ]
