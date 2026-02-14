@@ -116,7 +116,7 @@ class Entity(models.Model):
     Email_Value = models.EmailField(blank=True)
     EntityRole_Value = models.CharField(max_length=max(map(len, EntityRoleItemTypeEnum)), choices=EntityRoleItemTypeEnum)
     LegalEntityIdentifier_Value = models.CharField(blank=True, max_length=20)
-    TaxID_Value = models.UUIDField(unique=True, editable=False, default=uuid.uuid4)
+    TaxID_Value = models.CharField(blank=True, max_length=50)
     URL_Value = models.URLField(blank=True)
     WorkPhone_Value = models.CharField(blank=True, max_length=15)
     Addresses = models.ManyToManyField('Address')
