@@ -5,8 +5,8 @@ import itertools
 
 import django.forms as forms
 import django.db.models
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, reverse
 
 import ob_taxonomy.models as ob_models
 import server.models as models
@@ -163,7 +163,11 @@ def generate_question_form(questions):
 
 
 def index(request):
-    return HttpResponse('hi')
+    checklist_template = models.ChecklistTemplate.objects.get(
+        ChecklistTemplateMaintainer__ChecklistTemplateMaintainerName_Value='Blu Banyan',
+        ChecklistTemplateName_Value='Residential Installation'
+    )
+    return HttpResponseRedirect(reverse('server:checklisttemplate-detail', args=[checklist_template.ChecklistTemplateID_Value]))
 
 
 def checklist_detail(request, ChecklistTemplateID_Value):

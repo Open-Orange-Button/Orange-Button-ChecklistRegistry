@@ -16,8 +16,11 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
 
 urlpatterns = [
-    path("checklist/", include("server.urls")),
+    path("", RedirectView.as_view(pattern_name='server:checklisttemplate-index', permanent=True), name='index'),
+    path("checklisttemplate/", include("server.urls")),
+    path("checklisttemplatemaintainer/", include("server.urls_maintainer")),
     path('admin/', admin.site.urls),
 ]
