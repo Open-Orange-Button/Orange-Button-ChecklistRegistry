@@ -19,6 +19,14 @@
                 Note that the Checklist Registry will automatically generate UUIDs for the ChecklistTemplateID and ChecklistTemplateMaintainerID.
                 Click the "Download OB JSON" button on the <a href='{% url 'checklisttemplate:index' %}' class='link-opacity-100'>example Orange Button Checklist Template</a> page to download an example JSON file.
     </p>
+    <h2 class='h4'>
+        CSV of <a href='https://obeditor.oballiance.org/#/?view=ChecklistTemplate' target='_blank' class='link-opacity-100'>Orange Button ChecklistTemplates with Questions</a>.
+    </h2>
+    <p>
+        Sending a CSV of Checklist Templates and Questions is trickier since the CSV format does not support nested lists and objects directly.
+        Please see the <a class='link-opacity-100' href='https://github.com/Open-Orange-Button/Orange-Button-ChecklistRegistry/blob/main/server/checklist_upserts/BluBanyan'>example Checklist Template CSV files</a> to see how Checklist Templates can be serialized using the CSV format.
+        We are happy to provide advice for how you should construct your Checklist Template CSV files; however, we strongly recommend using the Orange Button JSON format to avoid ambiguity.
+    </p>
     <!-- <h2 class='h4'> -->
     <!---->
     <!--             CSV of <a href='https://obeditor.oballiance.org/#/?view=Question' target='_blank' class='link-opacity-100'>Orange Button Questions</a>. -->
@@ -32,7 +40,7 @@
     <!--             Next, create a second CSV file (the AnswerOptions CSV), add a column whose header is the set's temporary name and values are the AnswerOption values of the Question. -->
     <!--             Please see the <a class='link-opacity-100' href='https://github.com/Open-Orange-Button/Orange-Button-ChecklistRegistry/blob/main/server/checklist_upserts/BluBanyan'>example Question CSV files</a>. -->
     <!-- </p> -->
-    <h2 class='h3'>
+<h2 class='h3'>
         Thank you for contributing your Checklist Template to the Checklist Registry!
     </h2>
 </div>
