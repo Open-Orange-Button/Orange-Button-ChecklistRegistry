@@ -2,6 +2,8 @@
 
 {% block title %}{{ checklist_template.ChecklistTemplateName_Value}} - {{ block.super }}{% endblock %}
 
+ {% block navbar-checklist-templates-active %}active{% endblock %}
+
 {% block main %}
 <div data-bs-spy="scroll" data-bs-target="#checklist-template-toc" data-bs-smooth-scroll="true" tabindex="0" class='container ms-2 me-0 mt-3 mb-4'>
 <div class='row justify-content-start'>
