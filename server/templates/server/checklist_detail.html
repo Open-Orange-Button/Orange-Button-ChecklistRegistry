@@ -69,9 +69,13 @@
                 </h1>
             </div>
             <div class='col text-end'>
-                <button type='button' class='btn btn-warning btn-lg ms-5'>
+                <a
+                    type='button'
+                    class='btn btn-warning btn-lg ms-5'
+                    href='{% url 'json' checklist_template.ChecklistTemplateID_Value %}'
+                >
                     <i class='bi bi-download'></i> Download OB JSON
-                </button>
+                </a>
             </div>
         </div>
         {% for section, questions_and_fields in sections_and_questions.items %}

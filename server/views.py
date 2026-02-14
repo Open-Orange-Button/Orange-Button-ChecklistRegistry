@@ -1,9 +1,11 @@
 import ast
 from collections import defaultdict
 import datetime
+import itertools
 
 import django.forms as forms
-from django.http import HttpResponse
+import django.db.models
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 
 import ob_taxonomy.models as ob_models
@@ -185,3 +187,38 @@ def checklist_detail(request, ChecklistTemplateID_Value):
         ),
     )
 
+
+def model_to_ob_json(model):
+    ob_json = defaultdict(dict)
+    ob_model = ob_models.OBObject.objects.get(name=model._meta.object_name)
+    for element in (
+        ob_models.OBElement.objects.filter(obobject__name=model._meta.object_name)
+        | ob_models.OBElement.objects.filter(obobject__in=ob_model.comprises.all())
+    ):
+        if element.item_type.units.exists():
+            ob_json[element.name]['Unit'] = getattr(model, f'{element.name}_Unit')
+        ob_json[element.name]['Value'] = getattr(model, f'{element.name}_Value')
+    for nested_object in ob_model.nested_objects.all():
+        ob_json[nested_object.name] = model_to_ob_json(getattr(model, nested_object.name))
+    for element_array in ob_model.element_arrays.all():
+        ob_json[element_array.name] = []
+        for v in getattr(model, element_array.name).all():
+            item_json = {}
+            if element_array.items.item_type.units.exists():
+                item_json['Unit'] = getattr(v, 'Unit')
+            item_json['Value'] = getattr(v, 'Value')
+            ob_json[element_array.name].append(item_json)
+    for object_array in ob_model.object_arrays.all():
+        ob_json[object_array.name] = [
+            model_to_ob_json(v)
+            for v in getattr(model, object_array.name).all()
+        ]
+    return ob_json
+
+
+def checklist_json(request, ChecklistTemplateID_Value):
+    checklist_template = get_object_or_404(models.ChecklistTemplate, ChecklistTemplateID_Value=ChecklistTemplateID_Value)
+    ob_json = model_to_ob_json(checklist_template)
+    response = JsonResponse(ob_json, json_dumps_params=dict(indent=4))
+    response['Content-Disposition'] = f'attachment; filename="{checklist_template.ChecklistTemplateID_Value}.json"'
+    return response
