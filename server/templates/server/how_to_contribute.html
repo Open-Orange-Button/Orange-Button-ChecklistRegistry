@@ -1,0 +1,37 @@
+{% extends 'server/base.html' %}
+
+{% block main %}
+<div class='container mt-3 mb-4'>
+    <h1>How to Contribute</h1>
+    <div class="alert alert-primary" role="alert">
+        <h4 class="alert-heading">Checklist Template Licensing</h4>
+        <p>When contributing a Checklist Template to the Orange Button Checklist Registry, you are agreeing to publish it under the <a href='https://www.apache.org/licenses/LICENSE-2.0' class='link-opacity-100'>Apache 2.0 License</a>.</p>
+    </div>
+    <p>
+        You can contribute your checklist template by emailing it to <a href='mailto:info@oballiance.org' class='link-opacity-100'>info@oballiance.org</a> in one of the following formats:
+    </p>
+    <h2 class='h4'>
+                <a href='https://obeditor.oballiance.org/#/?view=ChecklistTemplate' target='_blank' class='link-opacity-100'>Orange Button Checklist Template</a> JSON.
+    </h2>
+    <p>
+                Note that the Checklist Registry will automatically generate UUIDs for the ChecklistTemplateID and ChecklistTemplateMaintainerID.
+                Click the "Download OB JSON" button on the <a href='{% url 'checklisttemplate:index' %}' class='link-opacity-100'>example Orange Button Checklist Template</a> page to download an example JSON file.
+    </p>
+    <!-- <h2 class='h4'> -->
+    <!---->
+    <!--             CSV of <a href='https://obeditor.oballiance.org/#/?view=Question' target='_blank' class='link-opacity-100'>Orange Button Questions</a>. -->
+    <!-- </h2> -->
+    <!-- <p> -->
+    <!--         Create a Questions CSV where each column each column is one of the fields of the Question definition <strong>and one column named ChecklistTemplateName containing the name of the Checklist Template that each question is associated with</strong>. -->
+    <!--             ChecklistTemplateIDs and QuestionIDs will be generated automatically by the Checklist Registry. -->
+    <!--             If the AnswerType for a Question is "EnumeratedSingle" or "EnumeratedMultiple" (e.g., the Question should be answered with a dropdown select), please provide AnswerOptions for the Question. -->
+    <!--             Since AnswerOptions is a set, it cannot be directly represented in a CSV file. -->
+    <!--             Instead, under the AnswerOptions column of the Questions CSV, provide a temporary name for the set of AnswerOption values. -->
+    <!--             Next, create a second CSV file (the AnswerOptions CSV), add a column whose header is the set's temporary name and values are the AnswerOption values of the Question. -->
+    <!--             Please see the <a class='link-opacity-100' href='https://github.com/Open-Orange-Button/Orange-Button-ChecklistRegistry/blob/main/server/checklist_upserts/BluBanyan'>example Question CSV files</a>. -->
+    <!-- </p> -->
+    <h2 class='h3'>
+        Thank you for contributing your Checklist Template to the Checklist Registry!
+    </h2>
+</div>
+{% endblock %}

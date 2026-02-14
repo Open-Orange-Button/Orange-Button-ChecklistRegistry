@@ -171,6 +171,10 @@ def index(request):
     return HttpResponseRedirect(reverse('checklisttemplate:detail', args=[checklist_template.ChecklistTemplateID_Value]))
 
 
+def how_to_contribute(request):
+    return render(request, 'server/how_to_contribute.html')
+
+
 def maintainer_detail(request, ChecklistTemplateMaintainerID_Value):
     maintainer = get_object_or_404(models.ChecklistTemplateMaintainer, ChecklistTemplateMaintainerID_Value=ChecklistTemplateMaintainerID_Value)
     return render(
