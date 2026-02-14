@@ -3,8 +3,9 @@ from collections import defaultdict
 import datetime
 import itertools
 
-import django.forms as forms
+from django.core import paginator
 import django.db.models
+import django.forms as forms
 from django.http import HttpResponse, JsonResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, reverse
 
@@ -182,11 +183,12 @@ def maintainer_detail(request, ChecklistTemplateMaintainerID_Value):
 
 
 def maintainer_list(request):
+    maintainers = models.ChecklistTemplateMaintainer.objects.all().order_by('ChecklistTemplateMaintainerName_Value')
     return render(
         request,
         'server/maintainer_list.html',
         dict(
-            maintainers=models.ChecklistTemplateMaintainer.objects.all().order_by('ChecklistTemplateMaintainerName_Value'),
+            page_maintainers=paginator.Paginator(maintainers, 20).get_page(request.GET.get('page')),
         ),
     )
 

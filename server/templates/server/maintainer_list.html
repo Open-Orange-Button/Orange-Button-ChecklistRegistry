@@ -3,17 +3,33 @@
 {% block main %}
 <div class='container mt-3 mb-4'>
     <h1>Checklist Template Maintainers</h1>
-    {% for maintainer in maintainers %}
-        <h2 class='h4'>
-            <a
-                type='button'
-                class='btn btn-outline-primary btn-short text-start'
-                style='width: 100%; font-size: 1.4rem;'
-                href='{% url 'maintainer:detail' maintainer.ChecklistTemplateMaintainerID_Value %}'
-                >
-                {{ maintainer.ChecklistTemplateMaintainerName_Value }}
-            </a>
-        </h2>
-    {% endfor %}
+    {% include 'server/pagination.html' with page=page_maintainers justify_content='justify-content-end' %}
+    <table class='table'>
+        <thead>
+            <tr>
+                <th col='scope'>Name</th>
+                <th col='scope'>URL</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for maintainer in page_maintainers %}
+            <tr>
+                <td>
+                    <a
+                        class='link-opacity-100'
+                        href='{% url 'maintainer:detail' maintainer.ChecklistTemplateMaintainerID_Value %}'
+                        >{{ maintainer.ChecklistTemplateMaintainerName_Value }}</a>
+                </td>
+                <td>
+                    <a
+                        class='link-opacity-100'
+                        href='{{ maintainer.URL_Value }}'
+                        >{{ maintainer.URL_Value }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% include 'server/pagination.html' with page=page_maintainers justify_content='justify-content-end' %}
 </div>
 {% endblock %}
