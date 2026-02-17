@@ -17,10 +17,12 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.views.generic import RedirectView
+from django.http import HttpResponse
 
 urlpatterns = [
     path('', RedirectView.as_view(pattern_name='checklisttemplate:index', permanent=True), name='index'),
     path('checklisttemplate/', include('server.urls')),
     path('checklisttemplatemaintainer/', include('server.urls_maintainer')),
+    path('health/', lambda request: HttpResponse('OK'), name='health'),
     path('admin/', admin.site.urls),
 ]
