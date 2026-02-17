@@ -25,14 +25,14 @@ resource "aws_db_parameter_group" "mysql_collation_pg" {
 
 # The MySQL RDS Instance
 resource "aws_db_instance" "mysql" {
-  identifier            = "django-db-instance"
+  identifier            = "${var.service-name}-db-instance"
   engine                = "mysql"
   engine_version        = "8.4.8"
   instance_class        = "db.t3.micro" # Free-tier eligible / Small dev size
   allocated_storage     = 20
   max_allocated_storage = 20 # Allows auto-scaling storage
 
-  db_name  = "djangodb"
+  db_name  = var.service-name-alphanumeric
   username = "admin"
   password = "your_secure_password" # In production, use a Secret Manager variable
 
