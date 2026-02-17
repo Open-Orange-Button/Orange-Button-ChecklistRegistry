@@ -1,9 +1,9 @@
 # Create the DB Subnet Group (assigns RDS to our private database subnets)
 resource "aws_db_subnet_group" "mysql" {
-  name       = "django-db-subnet-group"
+  name       = "${var.service-name}-db-subnet-group"
   subnet_ids = module.vpc.database_subnets
 
-  tags = { Name = "Django DB Subnet Group" }
+  tags = { Name = "${var.service-name} DB Subnet Group" }
 }
 
 resource "aws_db_parameter_group" "mysql_collation_pg" {

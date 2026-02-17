@@ -1,6 +1,6 @@
 # 1. Security Group for Bastion Host
 resource "aws_security_group" "bastion_sg" {
-  name        = "django-bastion-sg"
+  name        = "${var.service-name}-bastion-sg"
   vpc_id      = module.vpc.vpc_id
   description = "Allow SSH access from my local IP"
 

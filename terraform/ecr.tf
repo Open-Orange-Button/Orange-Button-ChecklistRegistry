@@ -1,6 +1,6 @@
 # 1. Create the ECR Repository
 resource "aws_ecr_repository" "app" {
-  name                 = "django-app-repo"
+  name                 = "${var.service-name}-repo"
   image_tag_mutability = "MUTABLE"
 
   # Scans your images for software vulnerabilities on push
@@ -9,7 +9,7 @@ resource "aws_ecr_repository" "app" {
   # }
 }
 
-# 2. Lifecycle Policy (Keep only the last 10 images)
+# 2. Lifecycle Policy (Keep only the last 2 images)
 resource "aws_ecr_lifecycle_policy" "cleanup" {
   repository = aws_ecr_repository.app.name
 

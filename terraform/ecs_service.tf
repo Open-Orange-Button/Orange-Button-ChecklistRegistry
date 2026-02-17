@@ -1,14 +1,15 @@
 # 1. Task Definition: The "Blueprint"
 resource "aws_ecs_task_definition" "app" {
-  family                   = "django-app"
+  family                   = "${var.service-name}-app"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "512" # 0.5 vCPU
-  memory                   = "4096" # 4 GB
+  # https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task_definition_parameters.html
+  cpu                      = "1024"
+  memory                   = "4096"
   execution_role_arn       = aws_iam_role.ecs_task_execution_role.arn
 
   container_definitions = jsonencode([{
-    name      = "django-app"
+    name      = "${var.service-name}-app"
     image     = "${aws_ecr_repository.app.repository_url}:latest"
     essential = true
 
@@ -31,7 +32,7 @@ resource "aws_ecs_task_definition" "app" {
       logDriver = "awslogs"
       options = {
         "awslogs-group"         = aws_cloudwatch_log_group.django_logs.name
-        "awslogs-region"        = "us-west-1"
+        "awslogs-region"        = var.region
         "awslogs-stream-prefix" = "django"
       }
     }
@@ -40,7 +41,7 @@ resource "aws_ecs_task_definition" "app" {
 
 # 2. ECS Service: The "Process Manager"
 resource "aws_ecs_service" "main" {
-  name            = "django-service"
+  name            = "${var.service-name}-service"
   cluster         = aws_ecs_cluster.main.id
   task_definition = aws_ecs_task_definition.app.arn
   desired_count   = 2 # High Availability (runs 2 copies of your app)
@@ -54,10 +55,12 @@ resource "aws_ecs_service" "main" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.app.arn
-    container_name   = "django-app"
+    container_name   = "${var.service-name}-app"
     container_port   = 8000
   }
 
   # Ensure the DB is ready before the service starts
   depends_on = [aws_db_instance.mysql, aws_lb_listener.http]
+
+  health_check_grace_period_seconds = 30
 }

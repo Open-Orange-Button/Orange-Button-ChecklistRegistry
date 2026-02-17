@@ -2,11 +2,11 @@ module "vpc" {
   source  = "terraform-aws-modules/vpc/aws"
   version = "~> 6.6.0"
 
-  name = "django-production-vpc"
+  name = "${var.service-name}-${var.deployment}-vpc"
   cidr = "10.0.0.0/16"
 
   # Use at least 2 Availability Zones for high availability
-  azs             = ["us-west-1a", "us-west-1c"]
+  azs             = var.availability-zones
 
   # Tier 1: Load Balancer (Public)
   public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
@@ -26,7 +26,7 @@ module "vpc" {
   enable_dns_support   = true
 
   tags = {
-    Environment = "production"
-    Project     = "django-ecs"
+    Environment = var.deployment
+    Project     = var.service-name
   }
 }

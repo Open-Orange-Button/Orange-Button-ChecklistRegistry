@@ -1,6 +1,6 @@
 # 1. Load Balancer Security Group (Public)
-resource "aws_security_group" "lb_sg" {
-  name        = "django-lb-sg"
+resource "aws_security_group" "alb_sg" {
+  name        = "${var.service-name}-alb-sg"
   vpc_id      = module.vpc.vpc_id
   description = "Allows public HTTP/HTTPS traffic"
 
@@ -28,7 +28,7 @@ resource "aws_security_group" "lb_sg" {
 
 # 2. ECS Task Security Group (Private)
 resource "aws_security_group" "ecs_sg" {
-  name        = "django-ecs-task-sg"
+  name        = "${var.service-name}-ecs-task-sg"
   vpc_id      = module.vpc.vpc_id
   description = "Allows traffic only from the Load Balancer"
 
@@ -36,7 +36,7 @@ resource "aws_security_group" "ecs_sg" {
     protocol        = "tcp"
     from_port       = 8000 # Standard Django port (change if using 80/443 in Docker)
     to_port         = 8000
-    security_groups = [aws_security_group.lb_sg.id]
+    security_groups = [aws_security_group.alb_sg.id]
   }
 
   egress {
@@ -49,7 +49,7 @@ resource "aws_security_group" "ecs_sg" {
 
 # 3. RDS MySQL Security Group (Private)
 resource "aws_security_group" "rds_sg" {
-  name        = "django-rds-sg"
+  name        = "${var.service-name}-rds-sg"
   vpc_id      = module.vpc.vpc_id
   description = "Allows MySQL traffic only from ECS tasks"
 
@@ -58,6 +58,13 @@ resource "aws_security_group" "rds_sg" {
     from_port       = 3306
     to_port         = 3306
     security_groups = [aws_security_group.ecs_sg.id]
+  }
+
+  ingress {
+    protocol        = "tcp"
+    from_port       = 3306
+    to_port         = 3306
+    security_groups = [aws_security_group.bastion_sg.id]
   }
 
   egress {

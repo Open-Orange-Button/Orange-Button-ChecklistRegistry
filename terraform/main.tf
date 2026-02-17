@@ -8,11 +8,11 @@ terraform {
 }
 
 provider "aws" {
-    region = "us-west-1"
+    region = var.region
 }
 
 resource "aws_ecs_cluster" "main" {
-  name = "django-cluster"
+  name = "${var.service-name}-cluster"
 
   setting {
     name = "containerInsights"
@@ -21,7 +21,7 @@ resource "aws_ecs_cluster" "main" {
 }
 
 resource "aws_iam_role" "ecs_task_execution_role" {
-    name = "django-task-execution-role"
+    name = "${var.service-name}-task-execution-role"
 
     assume_role_policy = jsonencode({
         Version = "2012-10-17"
@@ -41,6 +41,6 @@ resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
 
 # CloudWatch Log Group for Django logs
 resource "aws_cloudwatch_log_group" "django_logs" {
-  name              = "/ecs/django-app"
+  name              = "/ecs/${var.service-name}-${var.deployment}"
   retention_in_days = 7
 }
