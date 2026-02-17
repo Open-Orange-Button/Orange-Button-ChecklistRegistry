@@ -157,7 +157,6 @@ def generate_question_form(questions):
         ),
     ])
     klass = ast.fix_missing_locations(klass)
-    print(ast.unparse(klass))
     temp = {}
     exec(compile(klass, '<ast>', 'exec'), temp)
     return temp['Question']
