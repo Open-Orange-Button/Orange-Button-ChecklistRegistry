@@ -8,6 +8,11 @@ variable "service-name-alphanumeric" {
     default = "OBChecklistRegistry"
 }
 
+variable "service-domain-name" {
+    description = "The domain name of the web service."
+    default = "checklistregistry.oballiance.org"
+}
+
 variable "deployment" {
     description = "The deployment is for production or development."
     default = "production"

@@ -1,6 +1,6 @@
 # Request a public certificate
 resource "aws_acm_certificate" "cert" {
-  domain_name       = "<your_domain>"
+  domain_name       = var.service-domain-name
   validation_method = "DNS"
 
   lifecycle {
@@ -26,7 +26,7 @@ resource "aws_route53_record" "cert_validation" {
   zone_id         = aws_route53_zone.main.zone_id
 }
 
-resource "aws_acm_certificate_validation" "example" {
+resource "aws_acm_certificate_validation" "acm_cert_validation" {
   certificate_arn         = aws_acm_certificate.cert.arn
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }

@@ -28,7 +28,7 @@ resource "aws_db_instance" "mysql" {
   identifier            = "${var.service-name}-db-instance"
   engine                = "mysql"
   engine_version        = "8.4.8"
-  instance_class        = "db.t3.micro" # Free-tier eligible / Small dev size
+  instance_class        = "db.t4g.micro" # Free-tier eligible / Small dev size
   allocated_storage     = 20
   max_allocated_storage = 20 # Allows auto-scaling storage
 

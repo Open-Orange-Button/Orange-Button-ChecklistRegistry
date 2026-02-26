@@ -1,12 +1,12 @@
 # 1. Create the Hosted Zone in Route 53
 resource "aws_route53_zone" "main" {
-  name = "<your_domain>" # Replace with your GoDaddy domain
+  name = var.service-domain-name # Replace with your GoDaddy domain
 }
 
 # 2. Point the domain to the ALB (Alias Record)
 resource "aws_route53_record" "app" {
   zone_id = aws_route53_zone.main.zone_id
-  name    = "<your_domain>" # Root domain
+  name    = var.service-domain-name # Root domain
   type    = "A"
 
   alias {
