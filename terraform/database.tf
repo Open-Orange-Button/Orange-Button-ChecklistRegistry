@@ -45,4 +45,10 @@ resource "aws_db_instance" "mysql" {
   publicly_accessible = false
   skip_final_snapshot = true # Set to false for production to prevent data loss
   multi_az            = false # Set to true for production high availability
+
+  # Database backups
+  backup_retention_period = 1 # Day (2026-02: this is the maximum for free RDS backup storage)
+  copy_tags_to_snapshot = true
+  # backup_window = "04:30-05:00" # UTC
+
 }
